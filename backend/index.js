@@ -20,42 +20,7 @@ app.use(bodyParser.json());
 const upload = multer({ dest: "uploads/" });
 const fileStore = {}; // In-memory cache
 
-// app.post("/upload", upload.single("file"), async (req, res) => {
-//   const file = req.file;
-//   const fileId = file.filename;
-//   let preview = "";
 
-//   try {
-//     if (file.originalname.endsWith(".csv")) {
-//       const content = fs.readFileSync(file.path, "utf8");
-//       const parsed = Papa.parse(content, { header: true });
-//       fileStore[fileId] = parsed.data;
-//       preview = JSON.stringify(parsed.data.slice(0, 5), null, 2);
-//     } else if (file.originalname.endsWith(".xlsx")) {
-//       const workbook = xlsx.readFile(file.path);
-//       const sheetName = workbook.SheetNames[0];
-//       const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
-//       fileStore[fileId] = data;
-//       preview = JSON.stringify(data.slice(0, 5), null, 2);
-//     } else if (file.originalname.endsWith(".txt")) {
-//       const content = fs.readFileSync(file.path, "utf8");
-//       fileStore[fileId] = content;
-//       preview = content.slice(0, 500);
-//     } else if (file.originalname.endsWith(".pdf")) {
-//       const dataBuffer = fs.readFileSync(file.path);
-//       const pdfData = await pdfParse(dataBuffer);
-//       fileStore[fileId] = pdfData.text;
-//       preview = pdfData.text.slice(0, 500);
-//     } else {
-//       return res.status(400).json({ error: "Unsupported file format." });
-//     }
-
-//     res.json({ fileId, preview });
-//   } catch (err) {
-//     console.error("Upload error:", err);
-//     res.status(500).json({ error: "Failed to process file." });
-//   }
-// });
 
 app.post("/upload", upload.single("file"), async (req, res) => {
   const file = req.file;
@@ -100,25 +65,6 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 });
 
 
-// app.post("/query", async (req, res) => {
-//   const { fileId, question } = req.body;
-//   const fileData = fileStore[fileId];
-//   if (!fileData) return res.status(404).json({ error: "File not found." });
-
-//   const content = typeof fileData === "string"
-//     ? fileData.slice(0, 2000)
-//     : JSON.stringify(fileData.slice(0, 10));
-
-//   const prompt = `
-// You are a helpful data assistant. Analyze the following file content and answer this question:
-
-// ${content}
-
-// Question: ${question}
-// `;
-// const content = typeof fileData === "string"
-//   ? fileData.slice(0, 5000)  // for text/pdf: trim to 5000 chars
-//   : JSON.stringify(fileData.slice(0, 20)); // for CSV: just 20 rows
 app.post("/query", async (req, res) => {
   const { fileId, question } = req.body;
 
